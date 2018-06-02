@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="lt.kvk.i11.radiukiene.controller.CalendarActivity">
+
+    <LinearLayout
+        android:id="@+id/lay"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:gravity="center"
+        android:orientation="horizontal"
+
+        android:weightSum="1">
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="50dp"
+            android:layout_weight=".2"
+            android:src="@drawable/kretkom_logo_melynas" />
+
+        <Button
+            android:id="@+id/change_street"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/ButtonSize"
+            android:layout_gravity="center"
+            android:layout_weight=".7"
+            android:background="@color/colorPrimary"
+            android:gravity="end|center"
+            android:text="Keisti gatvę"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="@dimen/ButtonTextSize" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/lay"
+        android:orientation="vertical" >
+
+        <LinearLayout
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/calender_txt_date"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ButtonSize"
+        android:layout_below="@id/lay"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:textSize="@dimen/TitleTextSize" />
+
+    <com.github.sundeepk.compactcalendarview.CompactCalendarView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/compactcalendar_view"
+        android:layout_width="fill_parent"
+        android:layout_height="250dp"
+        android:layout_below="@+id/calender_txt_date"
+        android:padding="10dp"
+        android:visibility="visible"
+        app:compactCalendarBackgroundColor="#fff"
+        app:compactCalendarCurrentDayBackgroundColor="#85BAFF"
+        app:compactCalendarCurrentSelectedDayBackgroundColor="#C6E0FF"
+        app:compactCalendarMultiEventIndicatorColor="#fff"
+        app:compactCalendarTargetHeight="250dp"
+        app:compactCalendarTextColor="#000"
+        app:compactCalendarTextSize="12sp" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_margin="8dp"
+        android:background="@drawable/layout_border_line"
+        android:layout_below="@+id/compactcalendar_view"
+        android:layout_height="wrap_content"/>
+
+
+
+    <Button
+        android:id="@+id/btn_set_remainder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/button_style"
+        android:layout_marginBottom="15dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="8dp"
+        android:text="Nustatyti priminimą"
+        android:textColor="@color/white"
+        android:textSize="@dimen/NormalTextSize" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

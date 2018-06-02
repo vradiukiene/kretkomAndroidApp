@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="lt.kvk.i11.radiukiene.controller.ReminderActivity">
+
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none">
+
+        <RelativeLayout
+            android:id="@+id/llReminder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/lay_switch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/tv_reminder_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Įjungti priminimą"
+                    android:textSize="@dimen/TitleTextSize"
+                    android:textColor="@color/logo_blue"
+                    android:textStyle="bold"
+                    android:textAllCaps="true"/>
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/timerSwitch"
+                    android:theme="@style/switch_theme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"/>
+
+            </RelativeLayout>
+
+            <TimePicker
+                android:id="@+id/time_picker"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+
+                android:layout_below="@+id/lay_switch"/>
+
+            <TextView
+                android:id="@+id/note"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/time_reminder"
+                android:layout_below="@+id/time_picker"
+                android:textSize="10sp"
+                android:layout_marginTop="30dp"
+                android:textColor="@color/backgroundColor"
+                android:textAlignment="center"
+                />
+
+            <Button
+                android:id="@+id/btn_setReminder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/note"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/button_style"
+                android:text="@string/text_reminder"
+                android:textColor="@color/white"
+                android:textSize="@dimen/NormalTextSize" />
+        </RelativeLayout>
+
+    </ScrollView>
+
+</LinearLayout>

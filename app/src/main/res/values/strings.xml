@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Mano atliekos</string>
+    <string name="text_enterStreet">Įvesti gatvės arba gyvenvietės pavadinimą</string>
+    <string name="text_calendar">Žiūrėti kalendorių</string>
+    <string name="pranesimas">Priminti apie išvežamas atliekas</string>
+    <string name="text_reminder">Išsaugoti</string>
+    <string name="change_street">Pakeisti gatvę</string>
+    <string name="time_reminder">Priminimas bus siunčiamas nustatytu laiku, vieną dieną prieš atliekų išvežimą</string>
+
+</resources>

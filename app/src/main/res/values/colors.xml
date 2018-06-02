@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#85BAFF</color>
+    <color name="backgroundColor">#85BAFF</color>
+    <color name="backgroundLight">#C6E0FF</color>
+    <color name="white">#FFFFFF</color>
+    <color name="logo_blue">#243D65</color>
+
+    <color name="circle_blue">#002397</color>
+    <color name="circle_brown">#803300</color>
+    <color name="circle_green">#2BA001</color>
+    <color name="circle_orange">#FD9510</color>
+    <color name="circle_red">#E10B00</color>
+    <color name="circle_yellow">#FFF001</color>
+
+    <color name="textColorSecondary">#A5A5A5</color>
+    <color name="black">#000000</color>
+
+</resources>
