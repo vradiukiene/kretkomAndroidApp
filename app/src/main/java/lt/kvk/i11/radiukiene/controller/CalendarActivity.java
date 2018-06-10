@@ -35,6 +35,7 @@ import lt.kvk.i11.radiukiene.R;
 import lt.kvk.i11.radiukiene.adapter.WastesAdapter;
 import lt.kvk.i11.radiukiene.rest.RestApiClient;
 import lt.kvk.i11.radiukiene.rest.RestApiInterface;
+import lt.kvk.i11.radiukiene.utils.ConnectionDetector;
 import lt.kvk.i11.radiukiene.utils.DatabaseHandler;
 import lt.kvk.i11.radiukiene.utils.GS;
 import lt.kvk.i11.radiukiene.utils.SessionManager;
@@ -48,7 +49,7 @@ public class CalendarActivity extends AppCompatActivity {
     CompactCalendarView compactCalendarView;
     private SimpleDateFormat dateFormatForMonth = new SimpleDateFormat("MMM - yyyy", Locale.getDefault());
     TextView txt_date;
-    List<GS> timelist = new ArrayList<>();
+    ArrayList<GS> timelist = new ArrayList<>();
     ArrayList<GS> wastes = new ArrayList<>();
     private String street_id;
     private long timestamp;
@@ -66,8 +67,8 @@ public class CalendarActivity extends AppCompatActivity {
         if (LeakCanary.isInAnalyzerProcess(this)) {
             return;
         }
-
         LeakCanary.install(getApplication());
+
         setContentView(R.layout.activity_calendar);
 
         databaseHandler = new DatabaseHandler(CalendarActivity.this);
@@ -78,8 +79,17 @@ public class CalendarActivity extends AppCompatActivity {
 
         getIdS();
 
-        getTimetable();
-        getWastes();
+        if(ConnectionDetector.getInstance().isConnectingToInternet()) {
+            timelist.clear();
+            wastes.clear();
+            getTimetable();
+            getWastes();
+        }else {
+            timelist.clear();
+            wastes.clear();
+            getAllWasteCollectionDb();
+            getAllWastesFromLocalDb();
+        }
 
         txt_date.setText(dateFormatForMonth.format(compactCalendarView.getFirstDayOfCurrentMonth()));
 
@@ -103,7 +113,16 @@ public class CalendarActivity extends AppCompatActivity {
         btn_changeStreet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(CalendarActivity.this, LoginActivity.class));
+                //check internet connection for change street
+                if(ConnectionDetector.getInstance().isConnectingToInternet()) {
+                    //Delete All WasteCollectionList Data By StreetId
+                    databaseHandler.deleteAllCollectionsListByStreetId(street_id);
+                    //Delete All Wastes
+                    databaseHandler.deleteAllWasteListData();
+                    startActivity(new Intent(CalendarActivity.this, LoginActivity.class));
+                }else {
+                    ConnectionDetector.getInstance().show_alert(CalendarActivity.this);
+                }
             }
         });
 
@@ -138,11 +157,11 @@ public class CalendarActivity extends AppCompatActivity {
 
     }
 
-    private void getTimestamp(String lec_date) {
+    private void getTimestamp(String wst_date) {
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = null;
         try {
-            date = (Date) formatter.parse(lec_date);
+            date = (Date) formatter.parse(wst_date);
             timestamp = date.getTime();
 
         } catch (ParseException e) {
@@ -175,6 +194,12 @@ public class CalendarActivity extends AppCompatActivity {
 
                     JSONArray jsonArray = object.getJSONArray("result");
 
+                    if(jsonArray.length() > 0){
+                        if(databaseHandler.isExistWasteCollectionsListByStreetId(street_id)) {
+                            databaseHandler.deleteAllCollectionsListByStreetId(street_id);
+                        }
+                    }
+
                     for (int i = 0; i < jsonArray.length(); i++) {
 
                         JSONObject c = jsonArray.getJSONObject(i);
@@ -186,6 +211,9 @@ public class CalendarActivity extends AppCompatActivity {
                         map.wasteCollection_id = c.getString("id");
                         timelist.add(map);
                         databaseHandler.addRemainderDb(c.getString("street_id"), c.getString("wasteCollect_date"), /*"",*/ c.getString("waste_name"));
+
+                        // Adding WasteCollections into local db
+                        databaseHandler.addWasteCollectionDb(c.getString("id"),c.getString("waste_name"),c.getString("street_id"),c.getString("waste_id"),c.getString("wasteCollect_date"));
                     }
 
                     if (timelist.size() > 0) {
@@ -245,6 +273,11 @@ public class CalendarActivity extends AppCompatActivity {
                 try {
                     JSONObject object = new JSONObject(json);
                     JSONArray jsonArray = object.getJSONArray("result");
+                    if(jsonArray.length() > 0){
+                        if(databaseHandler.isExistWastesList()){
+                            databaseHandler.deleteAllWasteListData();
+                        }
+                    }
                     for (int i = 0; i < jsonArray.length(); i++) {
 
                         JSONObject c = jsonArray.getJSONObject(i);
@@ -252,6 +285,9 @@ public class CalendarActivity extends AppCompatActivity {
                         map.waste_id = c.getString("id");
                         map.name = c.getString("waste_name");
                         wastes.add(map);
+
+                        //Adding wastes entry insert into local db
+                        databaseHandler.addWastesDb(c.getString("id"),c.getString("waste_name"));
                     }
                     adapter = new WastesAdapter(CalendarActivity.this, wastes);
                     recyclerView.setAdapter(adapter);
@@ -264,8 +300,52 @@ public class CalendarActivity extends AppCompatActivity {
             public void onFailure(Call<ResponseBody> call, Throwable t) {
 
             }
-
         });
+    }
 
+    //get all WasteCollectionList Data By StreetId from local database
+    private void getAllWasteCollectionDb()
+    {
+        if(databaseHandler.isExistWasteCollectionsListByStreetId(street_id)) {
+            timelist.clear();
+            timelist = databaseHandler.getAllWasteCollectionDb(street_id);
+            if (timelist.size() > 0) {
+                for (int i = 0; i < timelist.size(); i++) {
+                    //Convert date to timestamp
+                    getTimestamp(timelist.get(i).wasteCollect_date);
+                    //Add event on date
+                    Event event = null;
+
+                    if (timelist.get(i).waste_id.equals("1"))
+                        event = new Event(Color.BLUE, timestamp, "Žaliosios birios");
+                    if (timelist.get(i).waste_id.equals("2"))
+                        event = new Event(Color.GRAY, timestamp, "Žaliosios šakos");
+                    if (timelist.get(i).waste_id.equals("3"))
+                        event = new Event(Color.RED, timestamp, "Komunalinės atliekos");
+                    if (timelist.get(i).waste_id.equals("4"))
+                        event = new Event(Color.YELLOW, timestamp, "Plastikas");
+                    if (timelist.get(i).waste_id.equals("5"))
+                        event = new Event(Color.GREEN, timestamp, "Stiklas");
+                    if (timelist.get(i).waste_id.equals("6"))
+                        event = new Event(Color.BLACK, timestamp, "Didžiosios, elektros ir elektronikos įrangos");
+                    compactCalendarView.addEvent(event);
+                }
+            }
+            List<Event> events = compactCalendarView.getEvents(1223344); // can also take a Date object
+            Log.d("TAG", "Events: " + events);
+        }
+    }
+
+    // get all wastes from local database
+    private void getAllWastesFromLocalDb()
+    {
+        if(databaseHandler.isExistWastesList()){
+            wastes.clear();
+            wastes = databaseHandler.getAllWasteDb();
+            if(wastes.size() > 0 ){
+                adapter = new WastesAdapter(CalendarActivity.this, wastes);
+                recyclerView.setAdapter(adapter);
+            }
+        }
     }
 }

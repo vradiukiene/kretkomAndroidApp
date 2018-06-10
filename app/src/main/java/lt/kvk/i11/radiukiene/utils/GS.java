@@ -8,6 +8,7 @@ public class GS {
 
     public String id;
     public String name;
+    public String street_id;
     public String waste_id;
     public String title;
     public String wasteCollect_date;
@@ -35,6 +36,14 @@ public class GS {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getStreetIdId() {
+        return street_id;
+    }
+
+    public void setStreetId(String street_id) {
+        this.street_id = street_id;
     }
 
 }
